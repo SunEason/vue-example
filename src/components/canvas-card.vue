@@ -3,12 +3,14 @@
     <canvas
       id="my-canvas"
       width="300"
-      height="500"
-      style="border: 1px solid #ccc"
-    ></canvas>
+      height="400"
+      style="border: 1px solid #ccc; border-radius: 16px"
+      >当前浏览器不支持canvas元素，请升级或更换浏览器！</canvas
+    >
   </div>
   <div class="flex-container">
     <button @click="copyCanvas(canvas)">复制</button>
+    <button @click="downloadCanvas(canvas)">下载</button>
   </div>
 </template>
 
@@ -21,6 +23,7 @@ onMounted(() => {
   canvas = document.getElementById("my-canvas") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d") ?? ({} as CanvasRenderingContext2D);
 
+  addBackground(canvas, ctx);
   addText(canvas, ctx, "Hello, Canvas!", {
     font: "16px Arial",
     fillStyle: "black",
@@ -29,6 +32,28 @@ onMounted(() => {
   });
   addImage(canvas, ctx, "./src/assets/images/qrcode.png");
 });
+
+function addBackground(
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D
+) {
+  // 创建径向渐变
+  const gradient = ctx.createLinearGradient(
+    canvas.width / 2,
+    0,
+    canvas.width / 2,
+    canvas.height
+  );
+  // 添加颜色停止点
+  gradient.addColorStop(0, "#ffd8d7");
+  gradient.addColorStop(0.3, "white");
+
+  // 设置填充样式为渐变
+  ctx.fillStyle = gradient;
+
+  // 绘制矩形，填充整个画布
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
 
 function addText(
   canvas: HTMLCanvasElement,
@@ -87,9 +112,11 @@ function addImage(
 }
 
 async function copyCanvas(canvas: HTMLCanvasElement) {
+  if (!navigator.clipboard) {
+    alert("您的浏览器不支持剪贴板操作");
+    return;
+  }
   try {
-    // const dataURL = canvas.toDataURL("image/png");
-    // console.log(dataURL); // 打印 Base64 字符串，用户可以手动复制
     const blob = await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (blob) {
@@ -104,11 +131,28 @@ async function copyCanvas(canvas: HTMLCanvasElement) {
       "image/png": blob,
     });
     await navigator.clipboard.write([clipboard]);
-
     alert("复制成功");
   } catch (err) {
     console.log("复制失败", err);
     alert("复制失败");
+  }
+}
+
+async function downloadCanvas(canvas: HTMLCanvasElement) {
+  try {
+    const dataURL = canvas.toDataURL("image/png");
+    const el = document.createElement("a");
+    el.href = dataURL;
+    el.download = "canvas-card.png";
+
+    const event = new MouseEvent("click", {
+      view: window,
+      bubbles: true,
+      cancelable: false,
+    });
+    el.dispatchEvent(event);
+  } catch (err) {
+    console.log("下载失败", err);
   }
 }
 </script>
@@ -118,5 +162,6 @@ async function copyCanvas(canvas: HTMLCanvasElement) {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 10px;
 }
 </style>
