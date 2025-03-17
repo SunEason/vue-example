@@ -1,25 +1,26 @@
-import LoadingTest from "./components/loading-test.vue";
-import ResizeBox from "./components/resize-box.vue";
-import CanvasCard from "./components/canvas-card.vue";
-
-import { computed, reactive, ref } from "vue";
-import Home from "./components/home.vue";
+import { computed, defineAsyncComponent, reactive, ref } from "vue";
 
 export const routers = [
   {
-    component: LoadingTest,
+    component: defineAsyncComponent(
+      () => import("./components/loading-test.vue")
+    ),
     name: "loading-test",
   },
   {
-    component: ResizeBox,
+    component: defineAsyncComponent(
+      () => import("./components/resize-box.vue")
+    ),
     name: "resize-box",
   },
   {
-    component: CanvasCard,
+    component: defineAsyncComponent(
+      () => import("./components/canvas-card.vue")
+    ),
     name: "canvas-card",
   },
   {
-    component: Home,
+    component: defineAsyncComponent(() => import("./components/home.vue")),
     name: "home",
   },
 ];
