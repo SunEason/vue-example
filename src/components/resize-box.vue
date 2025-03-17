@@ -36,7 +36,6 @@ const onMouseMove = (e: MouseEvent) => {
     boxWidth.value = e.clientX - rect.value!.left;
     boxHeight.value = e.clientY - rect.value!.top;
     rect.value = resizeBoxRef.value?.getBoundingClientRect();
-    debugger;
   }
 };
 
