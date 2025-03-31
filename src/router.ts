@@ -20,6 +20,12 @@ export const routers = [
     name: "canvas-card",
   },
   {
+    component: defineAsyncComponent(
+      () => import("./components/pull-refresh-demo.vue")
+    ),
+    name: "pull-refresh-demo",
+  },
+  {
     component: defineAsyncComponent(() => import("./components/home.vue")),
     name: "home",
   },
